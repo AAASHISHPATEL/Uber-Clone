@@ -18,11 +18,23 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
+    lowercase: true,
+    match: [/.+\@.+\..+/, "Please enter a valid email address"],
     minlength: [5, "Email must contain atleast 5 characters"],
   },
   password: {
     type: String,
     required: true,
+    validate: {
+      validator: function (v) {
+        // At least one uppercase, one lowercase, one number, and one special character
+        return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(
+          v
+        );
+      },
+      message:
+        "Password must be at least 8 characters long, include one uppercase letter, one lowercase letter, one number, and one special character",
+    },
     select: false,
   },
   socketID: {

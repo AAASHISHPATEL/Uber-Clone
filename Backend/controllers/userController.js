@@ -14,6 +14,13 @@ module.exports.registerUser=async (req,res,next) => {
 
     const {fullname,email,password}=req.body;
 
+    const isUserAlreadyExist =await userModel.findOne({ email });
+    if (isUserAlreadyExist) {
+      return res
+        .status(400)
+        .json({ message: "User already exist with this email." });
+    }
+
     const hashedPassword=await userModel.hashPassword(password);
 
     const user=await userService.createUser({fullname,email,password:hashedPassword});
@@ -38,7 +45,7 @@ module.exports.loginUser=async (req,res,next)=>{
         return res.status(401).json({message:"Invalid email or password!"});
     }
 
-    const isPasswordMatch =await user.comparePassword(password);
+    const isPasswordMatch = await user.comparePassword(password);
     if(!isPasswordMatch){
         return res.status(401).json({message:"Invalid email or password!"});
     }
